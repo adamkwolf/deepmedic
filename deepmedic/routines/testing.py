@@ -86,7 +86,7 @@ def performInferenceOnWholeVolumes(myLogger,
     if saveIndividualFmImagesForVisualisation or saveMultidimensionalImageWithAllFms:
         totalNumberOfFMsToProcess = 0
         for pathway in cnn3dInstance.pathways :
-            indicesOfFmsToVisualisePerLayerOfCertainPathway = indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.pType() ]
+            indicesOfFmsToVisualisePerLayerOfCertainPathway = indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.p_type()]
             if indicesOfFmsToVisualisePerLayerOfCertainPathway!=[] :
                 for layer_i in xrange(len(pathway.getLayers())) :
                     indicesOfFmsToVisualiseForCertainLayerOfCertainPathway = indicesOfFmsToVisualisePerLayerOfCertainPathway[layer_i]
@@ -131,7 +131,7 @@ def performInferenceOnWholeVolumes(myLogger,
                                     
                                     padInputImagesBool = padInputImagesBool,
                                     cnnReceptiveField = recFieldCnn, # only used if padInputsBool
-                                    dimsOfPrimeSegmentRcz = cnn3dInstance.pathways[0].getShapeOfInput()[2][2:], # only used if padInputsBool
+                                    dimsOfPrimeSegmentRcz =cnn3dInstance.pathways[0].get_input_shape()[2][2:], # only used if padInputsBool
                                     
                                     smoothChannelsWithGaussFilteringStdsForNormalAndSubsampledImage = smoothChannelsWithGaussFilteringStdsForNormalAndSubsampledImage,
                                     normAugmNone0OnImages1OrSegments2AlreadyNormalized1SubtrUpToPropOfStdAndDivideWithUpToPerc = [0, -1,-1,-1],
@@ -146,12 +146,12 @@ def performInferenceOnWholeVolumes(myLogger,
             
         # Tile the image and get all slices of the segments that it fully breaks down to.
         [sliceCoordsOfSegmentsInImage] = getCoordsOfAllSegmentsOfAnImage(myLogger=myLogger,
-                                                                        dimsOfPrimarySegment=cnn3dInstance.pathways[0].getShapeOfInput()[2][2:],
-                                                                        strideOfSegmentsPerDimInVoxels=strideOfImagePartsPerDimensionInVoxels,
-                                                                        batch_size = batch_size,
-                                                                        channelsOfImageNpArray = imageChannels,#chans,niiDims
+                                                                         dimsOfPrimarySegment=cnn3dInstance.pathways[0].get_input_shape()[2][2:],
+                                                                         strideOfSegmentsPerDimInVoxels=strideOfImagePartsPerDimensionInVoxels,
+                                                                         batch_size = batch_size,
+                                                                         channelsOfImageNpArray = imageChannels,  #chans,niiDims
                                                                         roiMask = roiMask
-                                                                        )
+                                                                         )
         myLogger.print3("Starting to segment each image-part by calling the cnn.cnnTestModel(i). This part takes a few mins per volume...")
         
         #In the next part, for each imagePart in a batch I get from the cnn a vector with labels for the central voxels of the imagepart (9^3 originally).
@@ -236,9 +236,9 @@ def performInferenceOnWholeVolumes(myLogger,
                 for pathway in cnn3dInstance.pathways :
                     for layer_i in xrange(len(pathway.getLayers())) :
                         indexOfTheLayerInTheReturnedListByTheBatchTraining += 1
-                        if indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.pType() ]==[] or indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.pType() ][layer_i]==[] :
+                        if indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.p_type()]==[] or indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.p_type()][layer_i]==[] :
                             continue
-                        indicesOfFmsToExtractFromThisLayer = indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.pType() ][layer_i]
+                        indicesOfFmsToExtractFromThisLayer = indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.p_type()][layer_i]
                         
                         fmsReturnedForATestBatchForCertainLayer = listWithTheFmsOfAllLayersSortedByPathwayTypeForTheBatch[indexOfTheLayerInTheReturnedListByTheBatchTraining][:, indicesOfFmsToExtractFromThisLayer[0]:indicesOfFmsToExtractFromThisLayer[1],:,:,:]
                         #We specify a range of fms to visualise from a layer. currentIndexInTheMultidimensionalImageWithAllToBeVisualisedFmsArray : highIndexOfFmsInTheMultidimensionalImageToFillInThisIterationExcluding defines were to put them in the multidimensional-image-array.
@@ -249,9 +249,9 @@ def performInferenceOnWholeVolumes(myLogger,
                         #====the following calculations could be move OUTSIDE THE FOR LOOPS, by using the kernel-size parameter (from the cnn instance) instead of the shape of the returned value.
                         #====fmsReturnedForATestBatchForCertainLayer.shape[2] - (numberOfCentralVoxelsClassified[0]-1) is essentially the width of the patch left after the convolutions.
                         #====These calculations are pathway and layer-specific. So they could be done once, prior to image processing, and results cached in a list to be accessed during the loop.
-                        numberOfVoxToSubtrToGetPatchWidthAtThisFm_R =  numberOfCentralVoxelsClassified[0]-1 if pathway.pType() != pt.SUBS else int(math.ceil((numberOfCentralVoxelsClassified[0]*1.0)/pathway.subsFactor()[0]) -1)
-                        numberOfVoxToSubtrToGetPatchWidthAtThisFm_C =  numberOfCentralVoxelsClassified[1]-1 if pathway.pType() != pt.SUBS else int(math.ceil((numberOfCentralVoxelsClassified[1]*1.0)/pathway.subsFactor()[1]) -1)
-                        numberOfVoxToSubtrToGetPatchWidthAtThisFm_Z =  numberOfCentralVoxelsClassified[2]-1 if pathway.pType() != pt.SUBS else int(math.ceil((numberOfCentralVoxelsClassified[2]*1.0)/pathway.subsFactor()[2]) -1)
+                        numberOfVoxToSubtrToGetPatchWidthAtThisFm_R =  numberOfCentralVoxelsClassified[0]-1 if pathway.p_type() != pt.SUBS else int(math.ceil((numberOfCentralVoxelsClassified[0] * 1.0) / pathway.sub_sampling_factor()[0]) - 1)
+                        numberOfVoxToSubtrToGetPatchWidthAtThisFm_C =  numberOfCentralVoxelsClassified[1]-1 if pathway.p_type() != pt.SUBS else int(math.ceil((numberOfCentralVoxelsClassified[1] * 1.0) / pathway.sub_sampling_factor()[1]) - 1)
+                        numberOfVoxToSubtrToGetPatchWidthAtThisFm_Z =  numberOfCentralVoxelsClassified[2]-1 if pathway.p_type() != pt.SUBS else int(math.ceil((numberOfCentralVoxelsClassified[2] * 1.0) / pathway.sub_sampling_factor()[2]) - 1)
                         rPatchDimensionAtTheFmThatWeVisualiseAfterConvolutions = fmsReturnedForATestBatchForCertainLayer.shape[2] - numberOfVoxToSubtrToGetPatchWidthAtThisFm_R
                         cPatchDimensionAtTheFmThatWeVisualiseAfterConvolutions = fmsReturnedForATestBatchForCertainLayer.shape[3] - numberOfVoxToSubtrToGetPatchWidthAtThisFm_C
                         zPatchDimensionAtTheFmThatWeVisualiseAfterConvolutions = fmsReturnedForATestBatchForCertainLayer.shape[4] - numberOfVoxToSubtrToGetPatchWidthAtThisFm_Z
@@ -260,9 +260,9 @@ def performInferenceOnWholeVolumes(myLogger,
                         zOfTopLeftCentralVoxelAtTheFm = (zPatchDimensionAtTheFmThatWeVisualiseAfterConvolutions-1)//2
                         
                         #the math.ceil / subsamplingFactor is a trick to make it work for even subsamplingFactor too. Eg 9/2=4.5 => Get 5. Combined with the trick at repeat, I get my correct number of central voxels hopefully.
-                        numberOfCentralVoxelsToGetInDirectionR = int(math.ceil((numberOfCentralVoxelsClassified[0]*1.0)/pathway.subsFactor()[0])) if pathway.pType() == pt.SUBS else numberOfCentralVoxelsClassified[0]
-                        numberOfCentralVoxelsToGetInDirectionC = int(math.ceil((numberOfCentralVoxelsClassified[1]*1.0)/pathway.subsFactor()[1])) if pathway.pType() == pt.SUBS else numberOfCentralVoxelsClassified[1]
-                        numberOfCentralVoxelsToGetInDirectionZ = int(math.ceil((numberOfCentralVoxelsClassified[2]*1.0)/pathway.subsFactor()[2])) if pathway.pType() == pt.SUBS else numberOfCentralVoxelsClassified[2]
+                        numberOfCentralVoxelsToGetInDirectionR = int(math.ceil((numberOfCentralVoxelsClassified[0]*1.0) / pathway.sub_sampling_factor()[0])) if pathway.p_type() == pt.SUBS else numberOfCentralVoxelsClassified[0]
+                        numberOfCentralVoxelsToGetInDirectionC = int(math.ceil((numberOfCentralVoxelsClassified[1]*1.0) / pathway.sub_sampling_factor()[1])) if pathway.p_type() == pt.SUBS else numberOfCentralVoxelsClassified[1]
+                        numberOfCentralVoxelsToGetInDirectionZ = int(math.ceil((numberOfCentralVoxelsClassified[2]*1.0) / pathway.sub_sampling_factor()[2])) if pathway.p_type() == pt.SUBS else numberOfCentralVoxelsClassified[2]
                         #=========================================================================================================================================
                         
                         #Grab the central voxels of the predicted fms from the cnn in this batch.
@@ -273,10 +273,10 @@ def performInferenceOnWholeVolumes(myLogger,
                                                             zOfTopLeftCentralVoxelAtTheFm:zOfTopLeftCentralVoxelAtTheFm+numberOfCentralVoxelsToGetInDirectionZ
                                                             ]
                         #If the pathway that is visualised currently is the subsampled, I need to upsample the central voxels to the normal resolution, before reconstructing the image-fm.
-                        if pathway.pType() == pt.SUBS : #subsampled layer. Remember that this returns smaller dimension outputs, cause it works in the subsampled space. I need to repeat it, to bring it to the dimensions of the normal-voxel-space.
-                            expandedOutputOfFmsR = np.repeat(centralVoxelsOfAllFmsInLayer, pathway.subsFactor()[0],axis = 2)
-                            expandedOutputOfFmsRC = np.repeat(expandedOutputOfFmsR, pathway.subsFactor()[1],axis = 3)
-                            expandedOutputOfFmsRCZ = np.repeat(expandedOutputOfFmsRC, pathway.subsFactor()[2],axis = 4)
+                        if pathway.p_type() == pt.SUBS : #subsampled layer. Remember that this returns smaller dimension outputs, cause it works in the subsampled space. I need to repeat it, to bring it to the dimensions of the normal-voxel-space.
+                            expandedOutputOfFmsR = np.repeat(centralVoxelsOfAllFmsInLayer, pathway.sub_sampling_factor()[0], axis = 2)
+                            expandedOutputOfFmsRC = np.repeat(expandedOutputOfFmsR, pathway.sub_sampling_factor()[1], axis = 3)
+                            expandedOutputOfFmsRCZ = np.repeat(expandedOutputOfFmsRC, pathway.sub_sampling_factor()[2], axis = 4)
                             #The below is a trick to get correct number of voxels even when subsampling factor is even or not exact divisor of the number of central voxels.
                             #...This trick is coupled with the ceil() when getting the numberOfCentralVoxelsToGetInDirectionR above.
                             centralVoxelsOfAllFmsToBeVisualisedForWholeBatch = expandedOutputOfFmsRCZ[:,
@@ -357,7 +357,7 @@ def performInferenceOnWholeVolumes(myLogger,
             currentIndexInTheMultidimensionalImageWithAllToBeVisualisedFmsArray = 0
             for pathway_i in xrange( len(cnn3dInstance.pathways) ) :
                 pathway = cnn3dInstance.pathways[pathway_i]
-                indicesOfFmsToVisualisePerLayerOfCertainPathway = indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.pType() ]
+                indicesOfFmsToVisualisePerLayerOfCertainPathway = indicesOfFmsToVisualisePerPathwayTypeAndPerLayer[ pathway.p_type()]
                 if indicesOfFmsToVisualisePerLayerOfCertainPathway!=[] :
                     for layer_i in xrange( len(pathway.getLayers()) ) :
                         indicesOfFmsToVisualiseForCertainLayerOfCertainPathway = indicesOfFmsToVisualisePerLayerOfCertainPathway[layer_i]

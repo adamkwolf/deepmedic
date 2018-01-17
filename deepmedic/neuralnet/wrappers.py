@@ -12,10 +12,10 @@ from __future__ import absolute_import, print_function, division
 class PathwayWrapperForSampling(object):
     # For CnnWrapperForSampling class.
     def __init__(self, pathwayInstance) :
-        self._pType = pathwayInstance.pType()
-        self._subsFactor = pathwayInstance.subsFactor()
-        self._shapeOfInputTrainValTest = pathwayInstance.getShapeOfInput()
-        self._shapeOfOutputTrainValTest = pathwayInstance.getShapeOfOutput()
+        self._pType = pathwayInstance.p_type()
+        self._subsFactor = pathwayInstance.sub_sampling_factor()
+        self._shapeOfInputTrainValTest = pathwayInstance.get_input_shape()
+        self._shapeOfOutputTrainValTest = pathwayInstance.get_output_shape()
     def pType(self):
         return self._pType
     def subsFactor(self):
@@ -35,7 +35,7 @@ class CnnWrapperForSampling(object):
                                                         cnn3dInstance.finalTargetLayer.outputShapeVal,
                                                         cnn3dInstance.finalTargetLayer.outputShapeTest ]
         # Pathways related
-        self._numPathwaysThatRequireInput = cnn3dInstance.getNumPathwaysThatRequireInput()
+        self._numPathwaysThatRequireInput = cnn3dInstance.get_num_pathways_with_input()
         self.numSubsPaths = cnn3dInstance.numSubsPaths
         
         self.pathways = []
@@ -44,5 +44,4 @@ class CnnWrapperForSampling(object):
         
     def getNumPathwaysThatRequireInput(self) :
         return self._numPathwaysThatRequireInput
-    
-    
+

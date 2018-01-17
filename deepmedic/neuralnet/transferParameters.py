@@ -35,7 +35,7 @@ def transferParametersBetweenModels(myLogger, cnnTarget, cnnSource, listOfLayers
     
     for pathTarget_i in xrange( len(cnnTarget.pathways) ):
         pathTarget = cnnTarget.pathways[pathTarget_i]
-        typePathTarget = pathTarget.pType()
+        typePathTarget = pathTarget.p_type()
         layersPathTarget = pathTarget.getLayers()
         
         for layerTarget_i in xrange( len(layersPathTarget) ):
