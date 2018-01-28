@@ -46,7 +46,7 @@ def upsampleRcz5DimArrayAndOptionalCrop(array5dimToUpsample,
     if upsamplingScheme == "repeat" :
         upsampledOutput = repeatRcz5DimArrayByFactor(array5dimToUpsample, upsamplingFactor)
     else :
-        print("ERROR: in upsampleRcz5DimArrayAndOptionalCrop(...). Not implemented type of upsampling! Exiting!"); exit(1)
+        print("ERROR: in upsample_array(...). Not implemented type of upsampling! Exiting!"); exit(1)
         
     if dimensionsOf5DimArrayToMatchInRcz != None :
         # If the central-voxels are eg 10, the susampled-part will have 4 central voxels. Which above will be repeated to 3*4 = 12.
@@ -100,7 +100,7 @@ def makeResidualConnectionBetweenLayersAndReturnOutput( myLogger,
     if np.any(np.asarray(deeperLayerOutputImageShapeTrain[2:]) > np.asarray(earlierLayerOutputImageShapeTrain[2:])) or \
             np.any(np.asarray(deeperLayerOutputImageShapeVal[2:]) > np.asarray(earlierLayerOutputImageShapeVal[2:])) or \
                 np.any(np.asarray(deeperLayerOutputImageShapeTest[2:]) > np.asarray(earlierLayerOutputImageShapeTest[2:])) :
-        myLogger.print3("ERROR: In function [makeResidualConnectionBetweenLayersAndReturnOutput] the RCZ-dimensions of a deeper layer FMs were found greater than the earlier layers. Not implemented functionality. Exiting!")
+        myLogger.print3("ERROR: In function [make_connection_between_layers] the RCZ-dimensions of a deeper layer FMs were found greater than the earlier layers. Not implemented functionality. Exiting!")
         myLogger.print3("\t (train) Dimensions of Deeper Layer=" + str(deeperLayerOutputImageShapeTrain) + ". Dimensions of Earlier Layer=" + str(earlierLayerOutputImageShapeTrain) )
         myLogger.print3("\t (val) Dimensions of Deeper Layer=" + str(deeperLayerOutputImageShapeVal) + ". Dimensions of Earlier Layer=" + str(earlierLayerOutputImageShapeVal) )
         myLogger.print3("\t (test) Dimensions of Deeper Layer=" + str(deeperLayerOutputImageShapeTest) + ". Dimensions of Earlier Layer=" + str(earlierLayerOutputImageShapeTest) )

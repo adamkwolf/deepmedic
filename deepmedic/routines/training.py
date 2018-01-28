@@ -420,7 +420,7 @@ def do_training(myLogger,
                                                                             tupleWithModulesToImportWhichAreUsedByTheJobFunctions) #tuple of the external modules that I need, of which I am calling
                 
             #-------------------------------START TRAINING IN BATCHES------------------------------
-            myLogger.print3("-T-T-T-T-T- Now Training for this subepoch... This may take a few minutes... -T-T-T-T-T-")
+            myLogger.print3("-t-t-t-t-t- Now Training for this subepoch... This may take a few minutes... -t-t-t-t-t-")
             start_trainingForSubepoch_time = time.clock()
             
             train0orValidation1 = 0 #training
